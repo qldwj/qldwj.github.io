@@ -1,12 +1,10 @@
-
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>凄凉文件</title>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui, -apple-system, sans-serif;}
 body{
@@ -14,6 +12,8 @@ body{
   min-height: 100vh;
   overflow-x: hidden;
 }
+
+/* 搜索框 */
 .search-box{
   display: flex;
   margin: 16px;
@@ -48,6 +48,8 @@ body{
 }
 .search-btn:hover{background: rgba(255,255,255,0.25);}
 .search-btn svg{width:22px;height:22px;fill:#fff;}
+
+/* 分类导航 */
 .nav-tabs{
   display: flex;
   justify-content: space-around;
@@ -78,6 +80,8 @@ body{
   transform: translateY(-2px);
 }
 .nav-tab svg{width:20px;height:20px;}
+
+/* 密码提示 */
 .pwd-box{
   margin: 0 16px 20px;
   padding: 16px;
@@ -118,6 +122,8 @@ body{
 .copy-toast.show{
   opacity: 1;
 }
+
+/* 文件列表 */
 .file-list{
   padding: 0 16px 20px;
 }
@@ -184,6 +190,8 @@ body{
   font-size: 14px;
   display: none;
 }
+
+/* 弹窗 */
 .modal-back{
   position: fixed;
   top: 0;
@@ -195,7 +203,7 @@ body{
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  display: none;
+  display: none; /* 默认隐藏 */
 }
 .modal-box{
   background: rgba(255,255,255,0.95);
@@ -239,6 +247,7 @@ body{
 </head>
 <body>
 
+<!-- 搜索框 -->
 <div class="search-box">
   <input class="search-input" id="searchInput" placeholder="搜索关键词或标签（如 #稳定）查找文件" type="text">
   <button class="search-btn" id="searchBtn">
@@ -246,6 +255,7 @@ body{
   </button>
 </div>
 
+<!-- 分类 -->
 <div class="nav-tabs">
   <div class="nav-tab active" data-tag="all">
     <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zM13 3h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>全部
@@ -258,6 +268,7 @@ body{
   </div>
 </div>
 
+<!-- 统一密码 -->
 <div class="pwd-box">
   <span>所有解压密码 @qiliang76</span>
   <svg class="copy-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -267,6 +278,7 @@ body{
 </div>
 <div class="copy-toast">密码已复制</div>
 
+<!-- 文件列表 -->
 <div class="file-list" id="fileList">
   <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色">
     <div class="file-name">4.2赛季上色</div>
@@ -274,7 +286,7 @@ body{
     <div class="file-tag">#上色</div>
     <div class="file-info">
       <span>大小：<span class="file-size">获取中...</span></span>
-      <span>更新：<span class="file-time">获取中...</span></span>
+      <span>上传：<span class="file-time">获取中...</span></span>
     </div>
     <div class="file-content">
       稳定,每个版本更新有时会被官方强制删除，需要重复导入<br>
@@ -290,7 +302,7 @@ body{
     <div class="file-tag">#画质</div>
     <div class="file-info">
       <span>大小：<span class="file-size">获取中...</span></span>
-      <span>更新：<span class="file-time">获取中...</span></span>
+      <span>上传：<span class="file-time">获取中...</span></span>
     </div>
     <div class="file-content">
       提升游戏画质，稳定运行，支持多种分辨率与特效调整
@@ -301,6 +313,7 @@ body{
 
 <div class="end-tip">——————— 已经滑到底了 ———————</div>
 
+<!-- 弹窗 -->
 <div class="modal-back" id="modal">
   <div class="modal-box">
     <div class="modal-title">所有文件解压密码 @qiliang76</div>
@@ -314,6 +327,7 @@ body{
 </div>
 
 <script>
+// 标题打字动画
 var tx=new Array("欢迎访问凄凉文件","本站文件免费使用","持续更新……","等你探索","谢谢访问","使用文件需注意安全","站长QQ:2912178191");
 var txcount=tx.length;
 var i=1;
@@ -329,6 +343,7 @@ function animatetitle(){
 }
 animatetitle();
 
+// 点击文字特效
 var a_idx = 0;
 jQuery(document).ready(function($) {
   $("body").click(function(e) {
@@ -357,6 +372,7 @@ jQuery(document).ready(function($) {
   });
 });
 
+// 弹窗 + 不再提示
 function checkModal(){
   if(localStorage.getItem('noShowModal') === 'true'){
     document.getElementById('modal').style.display = 'none';
@@ -373,6 +389,7 @@ document.getElementById('closeModal').onclick = function(){
   document.getElementById('modal').style.display = 'none';
 }
 
+// 分类切换
 let tabs = document.querySelectorAll('.nav-tab');
 let items = document.querySelectorAll('.file-item');
 let endTip = document.querySelector('.end-tip');
@@ -401,6 +418,7 @@ tabs.forEach(tab=>{
   }
 });
 
+// 搜索功能
 function doSearch(){
   let kw = document.getElementById('searchInput').value.trim().toLowerCase();
   let show = 0;
@@ -421,6 +439,7 @@ document.getElementById('searchInput').onkeyup = e=>{
   if(e.key=='Enter') doSearch();
 }
 
+// 复制密码
 document.querySelector('.copy-icon').addEventListener('click', function() {
   const pwd = '@qiliang76';
   navigator.clipboard.writeText(pwd).then(() => {
@@ -430,11 +449,13 @@ document.querySelector('.copy-icon').addEventListener('click', function() {
   });
 });
 
+// 下载文件
 function downloadFile(btn) {
   const item = btn.closest('.file-item');
   const filename = item.dataset.filename + '.zip';
   const gitBase = 'https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/文件/';
   const downloadUrl = gitBase + encodeURIComponent(filename);
+  
   const a = document.createElement('a');
   a.href = downloadUrl;
   a.download = filename;
@@ -443,6 +464,7 @@ function downloadFile(btn) {
   document.body.removeChild(a);
 }
 
+// 格式化文件大小
 function formatFileSize(bytes) {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
@@ -451,35 +473,65 @@ function formatFileSize(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-function formatDate(iso) {
+// 格式化时间为 年-月-日 时:分
+function formatDateTime(dateStr) {
+  if (!dateStr) return '未知时间';
+  const reg = /(\d+)年(\d+)月(\d+)日(\d+):(\d+)/;
+  const match = dateStr.match(reg);
+  if (!match) return dateStr;
+  const [, y, m, d, h, min] = match;
+  return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')} ${h.padStart(2,'0')}:${min.padStart(2,'0')}`;
+}
+
+// 从指定地址按文件名获取时间并渲染
+async function loadFileTimes() {
+  const timeUrl = 'https://jianhancloud.cn/qljm/%E6%9B%B4%E6%96%B0%E6%97%B6%E9%97%B4.css';
   try {
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) return '未知时间';
-    return d.getFullYear() + '-' +
-           String(d.getMonth() + 1).padStart(2, '0') + '-' +
-           String(d.getDate()).padStart(2, '0');
+    const res = await fetch(timeUrl);
+    const text = await res.text();
+    // 按行解析：每行格式：文件名=时间
+    const lines = text.split('\n').filter(line => line.trim() !== '');
+    const timeMap = {};
+    lines.forEach(line => {
+      const [name, time] = line.split('=').map(s => s.trim());
+      if (name && time) timeMap[name] = time;
+    });
+    // 给每个文件渲染时间
+    items.forEach(item => {
+      const filename = item.dataset.filename + '.zip';
+      const timeEl = item.querySelector('.file-time');
+      const time = timeMap[filename] || '未知时间';
+      timeEl.textContent = formatDateTime(time);
+    });
   } catch (e) {
-    return '未知时间';
+    items.forEach(item => {
+      item.querySelector('.file-time').textContent = '获取失败';
+    });
+    console.error('获取时间失败:', e);
   }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+// 加载文件大小
+async function loadFileSizes() {
   const gitApiBase = 'https://api.github.com/repos/qldwj/qldwj.github.io/contents/文件/';
-  items.forEach(async (item) => {
+  items.forEach(async item => {
     const filename = item.dataset.filename + '.zip';
     const sizeEl = item.querySelector('.file-size');
-    const timeEl = item.querySelector('.file-time');
     try {
       const res = await fetch(gitApiBase + encodeURIComponent(filename));
-      if (!res.ok) throw new Error();
       const data = await res.json();
       sizeEl.textContent = formatFileSize(data.size);
-      timeEl.textContent = formatDate(data.commit?.committer?.date || data.updated_at);
     } catch (e) {
       sizeEl.textContent = '未知大小';
-      timeEl.textContent = '未知时间';
+      console.error(`获取 ${filename} 大小失败:`, e);
     }
   });
+}
+
+// 页面加载完成后执行
+window.addEventListener('DOMContentLoaded', async () => {
+  await loadFileTimes();
+  loadFileSizes();
 });
 </script>
 </body>
