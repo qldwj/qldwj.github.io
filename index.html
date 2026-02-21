@@ -152,13 +152,6 @@ body{
   margin-right: 8px;
   margin-bottom: 12px;
 }
-.file-info{
-  display: flex;
-  gap: 16px;
-  font-size: 13px;
-  color: rgba(255,255,255,0.8);
-  margin-bottom: 12px;
-}
 .file-content{
   font-size: 15px;
   line-height: 1.7;
@@ -203,7 +196,6 @@ body{
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  display: none; /* 默认隐藏 */
 }
 .modal-box{
   background: rgba(255,255,255,0.95);
@@ -280,14 +272,11 @@ body{
 
 <!-- 文件列表 -->
 <div class="file-list" id="fileList">
+  <!-- 示例文件：文件名会自动拼接为 4.2赛季上色.zip -->
   <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色">
     <div class="file-name">4.2赛季上色</div>
     <div class="file-tag">#稳定</div>
     <div class="file-tag">#上色</div>
-    <div class="file-info">
-      <span>大小：<span class="file-size">获取中...</span></span>
-      <span>上传：<span class="file-time">获取中...</span></span>
-    </div>
     <div class="file-content">
       稳定,每个版本更新有时会被官方强制删除，需要重复导入<br>
       功能:<br>
@@ -296,14 +285,11 @@ body{
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
 
+  <!-- 新增：画质文件合集 -->
   <div class="file-item" data-tags="稳定,画质" data-filename="画质文件合集">
     <div class="file-name">画质文件合集</div>
     <div class="file-tag">#稳定</div>
     <div class="file-tag">#画质</div>
-    <div class="file-info">
-      <span>大小：<span class="file-size">获取中...</span></span>
-      <span>上传：<span class="file-time">获取中...</span></span>
-    </div>
     <div class="file-content">
       提升游戏画质，稳定运行，支持多种分辨率与特效调整
     </div>
@@ -376,11 +362,9 @@ jQuery(document).ready(function($) {
 function checkModal(){
   if(localStorage.getItem('noShowModal') === 'true'){
     document.getElementById('modal').style.display = 'none';
-    return;
   }
-  document.getElementById('modal').style.display = 'flex';
 }
-window.addEventListener('DOMContentLoaded', checkModal);
+checkModal();
 
 document.getElementById('closeModal').onclick = function(){
   if(document.getElementById('noShowAgain').checked){
@@ -389,7 +373,7 @@ document.getElementById('closeModal').onclick = function(){
   document.getElementById('modal').style.display = 'none';
 }
 
-// 分类切换
+// 分类切换：只按稳定/娱乐过滤，其他标签不参与分类
 let tabs = document.querySelectorAll('.nav-tab');
 let items = document.querySelectorAll('.file-item');
 let endTip = document.querySelector('.end-tip');
@@ -418,7 +402,7 @@ tabs.forEach(tab=>{
   }
 });
 
-// 搜索功能
+// 搜索：支持关键词和标签（如 #稳定）
 function doSearch(){
   let kw = document.getElementById('searchInput').value.trim().toLowerCase();
   let show = 0;
@@ -449,7 +433,7 @@ document.querySelector('.copy-icon').addEventListener('click', function() {
   });
 });
 
-// 下载文件
+// 下载文件：自动拼接文件名.zip，使用 GitHub raw 地址直接下载
 function downloadFile(btn) {
   const item = btn.closest('.file-item');
   const filename = item.dataset.filename + '.zip';
@@ -463,62 +447,6 @@ function downloadFile(btn) {
   a.click();
   document.body.removeChild(a);
 }
-
-// 格式化文件大小
-function formatFileSize(bytes) {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-// 直接读取你链接里的格式，完全不变！
-async function loadRealTime() {
-  const url = "https://jianhancloud.cn/qljm/%E6%9B%B4%E6%96%B0%E6%97%B6%E9%97%B4.css";
-  try {
-    const res = await fetch(url);
-    const text = await res.text();
-
-    items.forEach(item => {
-      const fname = item.dataset.filename + ".zip";
-      const timeEl = item.querySelector(".file-time");
-      const reg = new RegExp(fname + "=([^\n]+)", "i");
-      const match = text.match(reg);
-      if (match) {
-        timeEl.textContent = match[1].trim();
-      } else {
-        timeEl.textContent = "无时间";
-      }
-    });
-  } catch (e) {
-    document.querySelectorAll(".file-time").forEach(el => {
-      el.textContent = "获取失败";
-    });
-  }
-}
-
-// 加载文件大小
-async function loadFileSizes() {
-  const gitApiBase = 'https://api.github.com/repos/qldwj/qldwj.github.io/contents/文件/';
-  items.forEach(async item => {
-    const filename = item.dataset.filename + '.zip';
-    const sizeEl = item.querySelector('.file-size');
-    try {
-      const res = await fetch(gitApiBase + encodeURIComponent(filename));
-      const data = await res.json();
-      sizeEl.textContent = formatFileSize(data.size);
-    } catch (e) {
-      sizeEl.textContent = '未知大小';
-    }
-  });
-}
-
-// 页面加载
-window.addEventListener('DOMContentLoaded', async () => {
-  await loadRealTime();
-  loadFileSizes();
-});
 </script>
 </body>
 </html>
