@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -214,7 +213,7 @@ body{
   padding: 28px;
   border-radius: 20px;
   text-align: center;
-  box-shadow: 0 10px 40 rgba(0,0,0,0.2);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
 }
 .modal-title{
   font-size: 18px;
@@ -262,7 +261,7 @@ body{
     <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zM13 3h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>全部
   </div>
   <div class="nav-tab" data-tag="稳定">
-    <svg viewBox="0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>稳定
+    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>稳定
   </div>
   <div class="nav-tab" data-tag="娱乐">
     <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4-8c0 .55-.45 1-1 1H9c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm7 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>娱乐
@@ -474,27 +473,26 @@ function formatFileSize(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-// 直接从你指定的链接获取时间 👇👇👇
-async function loadTimeFromYourUrl() {
-  const TIME_URL = "https://jianhancloud.cn/qljm/%E6%9B%B4%E6%96%B0%E6%97%B6%E9%97%B4.css";
+// 直接读取你链接里的格式，完全不变！
+async function loadRealTime() {
+  const url = "https://jianhancloud.cn/qljm/%E6%9B%B4%E6%96%B0%E6%97%B6%E9%97%B4.css";
   try {
-    let r = await fetch(TIME_URL);
-    let text = await r.text();
-    let allItems = document.querySelectorAll('.file-item');
-    
-    allItems.forEach(item => {
-      let fname = item.dataset.filename + ".zip";
-      let timeEl = item.querySelector('.file-time');
-      let reg = new RegExp(fname + "=([^\\n]+)", "i");
-      let match = text.match(reg);
-      if (match && match[1]) {
+    const res = await fetch(url);
+    const text = await res.text();
+
+    items.forEach(item => {
+      const fname = item.dataset.filename + ".zip";
+      const timeEl = item.querySelector(".file-time");
+      const reg = new RegExp(fname + "=([^\n]+)", "i");
+      const match = text.match(reg);
+      if (match) {
         timeEl.textContent = match[1].trim();
       } else {
         timeEl.textContent = "无时间";
       }
     });
   } catch (e) {
-    document.querySelectorAll('.file-time').forEach(el => {
+    document.querySelectorAll(".file-time").forEach(el => {
       el.textContent = "获取失败";
     });
   }
@@ -518,9 +516,10 @@ async function loadFileSizes() {
 
 // 页面加载
 window.addEventListener('DOMContentLoaded', async () => {
-  await loadTimeFromYourUrl();
+  await loadRealTime();
   loadFileSizes();
 });
 </script>
 </body>
 </html>
+
