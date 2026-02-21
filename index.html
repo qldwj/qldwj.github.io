@@ -373,7 +373,7 @@ document.getElementById('closeModal').onclick = function(){
   document.getElementById('modal').style.display = 'none';
 }
 
-// 分类切换：只按稳定/娱乐过滤，其他标签不参与分类
+// 分类切换：所有分类无文件都显示提示
 let tabs = document.querySelectorAll('.nav-tab');
 let items = document.querySelectorAll('.file-item');
 let endTip = document.querySelector('.end-tip');
@@ -383,40 +383,40 @@ tabs.forEach(tab=>{
     tabs.forEach(t=>t.classList.remove('active'));
     this.classList.add('active');
     let tag = this.dataset.tag;
-    let show = 0;
+    let showCount = 0;
     items.forEach(el=>{
       let tags = el.dataset.tags.split(',');
       if(tag === 'all'){
         el.style.display = 'block';
-        show++;
+        showCount++;
       } else {
         if(tags.includes(tag)){
           el.style.display = 'block';
-          show++;
+          showCount++;
         } else {
           el.style.display = 'none';
         }
       }
     });
-    endTip.style.display = show === 0 ? 'block' : 'none';
+    endTip.style.display = showCount === 0 ? 'block' : 'none';
   }
 });
 
-// 搜索：支持关键词和标签（如 #稳定）
+// 搜索：无结果也显示提示
 function doSearch(){
   let kw = document.getElementById('searchInput').value.trim().toLowerCase();
-  let show = 0;
+  let showCount = 0;
   items.forEach(el=>{
     let text = el.innerText.toLowerCase();
     let tags = el.dataset.tags.split(',').map(t=>`#${t}`).join(' ').toLowerCase();
     if(text.includes(kw) || tags.includes(kw)){
       el.style.display='block';
-      show++;
+      showCount++;
     }else{
       el.style.display='none';
     }
   });
-  endTip.style.display = show==0 ? 'block' : 'none';
+  endTip.style.display = showCount === 0 ? 'block' : 'none';
 }
 document.getElementById('searchBtn').onclick = doSearch;
 document.getElementById('searchInput').onkeyup = e=>{
@@ -433,7 +433,7 @@ document.querySelector('.copy-icon').addEventListener('click', function() {
   });
 });
 
-// 下载文件：自动拼接文件名.zip，使用 GitHub raw 地址直接下载
+// 下载文件
 function downloadFile(btn) {
   const item = btn.closest('.file-item');
   const filename = item.dataset.filename + '.zip';
@@ -450,7 +450,3 @@ function downloadFile(btn) {
 </script>
 </body>
 </html>
-
-
-
-
