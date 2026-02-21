@@ -13,27 +13,6 @@ body{
   overflow-x: hidden;
 }
 
-/* 顶部栏 */
-.header{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-  color: #fff;
-}
-.refresh-btn{
-  width: 24px;
-  height: 24px;
-  border: none;
-  background: transparent;
-  font-size: 20px;
-  cursor: pointer;
-  color: #fff;
-}
-
 /* 搜索框 */
 .search-box{
   display: flex;
@@ -69,38 +48,6 @@ body{
 }
 .search-btn:hover{background: rgba(255,255,255,0.25);}
 .search-btn svg{width:22px;height:22px;fill:#fff;}
-
-/* 轮播图 */
-.swiper-box{
-  margin: 0 16px 20px;
-  height: 260px;
-  position: relative;
-  overflow: hidden;
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-}
-.swiper-wrapper{
-  display: flex;
-  width: 300%;
-  height: 100%;
-  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.swiper-item{
-  width: 100%;
-  height: 100%;
-  flex-shrink: 0;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  font-weight: 700;
-  color: #000;
-  text-align: center;
-  padding: 20px;
-  background-color: rgba(255,255,255,0.85);
-}
 
 /* 分类导航 */
 .nav-tabs{
@@ -264,29 +211,12 @@ body{
 </head>
 <body>
 
-<!-- 顶部栏 -->
-<div class="header">
-  <div style="display:flex;align-items:center;gap:8px;">
-    <span style="font-size:18px;font-weight:500;">持续更新</span>
-  </div>
-  <button class="refresh-btn" onclick="location.reload()">↻</button>
-</div>
-
 <!-- 搜索框 -->
 <div class="search-box">
   <input class="search-input" id="searchInput" placeholder="搜索关键词查找文件" type="text">
   <button class="search-btn" id="searchBtn">
     <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
   </button>
-</div>
-
-<!-- 轮播图 -->
-<div class="swiper-box">
-  <div class="swiper-wrapper" id="swiperWrapper">
-    <div class="swiper-item" style="background-image:url(https://mpimg.cn/view.php/41e24d071315d18e6dc6ee19d3ec3be0.jpeg)">免费好用的文件</div>
-    <div class="swiper-item" style="background-image:url(https://mpimg.cn/view.php/3219b816f3eb396e170b84447c084c59.jpeg)">频道https://t.me/qiliang76nb</div>
-    <div class="swiper-item" style="background-image:url(https://mpimg.cn/view.php/c1fb974634f7fcc77050a36e4015d08b.jpeg)">所有密码为@qiliang76</div>
-  </div>
 </div>
 
 <!-- 分类 -->
@@ -382,16 +312,6 @@ jQuery(document).ready(function($) {
   });
 });
 
-// 轮播：横向滑动
-let swiperWrapper = document.getElementById('swiperWrapper');
-let slideIndex = 0;
-function slideNext(){
-  slideIndex++;
-  if(slideIndex >= 3) slideIndex = 0;
-  swiperWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
-}
-setInterval(slideNext, 3000);
-
 // 弹窗 + 不再提示
 function checkModal(){
   if(localStorage.getItem('noShowModal') === 'true'){
@@ -472,3 +392,4 @@ function downloadFile(btn) {
 </script>
 </body>
 </html>
+
