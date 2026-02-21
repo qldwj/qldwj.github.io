@@ -379,7 +379,7 @@ document.getElementById('searchInput').onkeyup = e=>{
 function downloadFile(btn) {
   const item = btn.closest('.file-item');
   const filename = item.dataset.filename + '.zip';
-  const gitBase = 'https://github.com/qldwj/qldwj.github.io/blob/main/文件/';
+  const gitBase = 'https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/文件/';
   const downloadUrl = gitBase + encodeURIComponent(filename);
   
   const a = document.createElement('a');
@@ -392,4 +392,6 @@ function downloadFile(btn) {
 </script>
 </body>
 </html>
+
+
 
