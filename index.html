@@ -152,6 +152,13 @@ body{
   margin-right: 8px;
   margin-bottom: 12px;
 }
+.file-info{
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+  margin-bottom: 12px;
+}
 .file-content{
   font-size: 15px;
   line-height: 1.7;
@@ -196,6 +203,7 @@ body{
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  display: none; /* 默认隐藏 */
 }
 .modal-box{
   background: rgba(255,255,255,0.95);
@@ -272,11 +280,20 @@ body{
 
 <!-- 文件列表 -->
 <div class="file-list" id="fileList">
-  <!-- 示例文件：文件名会自动拼接为 4.2赛季上色.zip -->
-  <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色">
+  <!-- 
+  使用说明：
+  1. 移除了 data-size，现在自动获取
+  2. data-time 由你手动填写，格式：YYYY-MM-DD
+  3. data-filename 必须和 GitHub 上的文件名一致（不含 .zip）
+  -->
+  <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色" data-time="2026-02-20">
     <div class="file-name">4.2赛季上色</div>
     <div class="file-tag">#稳定</div>
     <div class="file-tag">#上色</div>
+    <div class="file-info">
+      <span>大小：<span class="file-size">获取中...</span></span>
+      <span>上传：<span class="file-time">2026-02-20</span></span>
+    </div>
     <div class="file-content">
       稳定,每个版本更新有时会被官方强制删除，需要重复导入<br>
       功能:<br>
@@ -285,11 +302,14 @@ body{
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
 
-  <!-- 新增：画质文件合集 -->
-  <div class="file-item" data-tags="稳定,画质" data-filename="画质文件合集">
+  <div class="file-item" data-tags="稳定,画质" data-filename="画质文件合集" data-time="2026-02-21">
     <div class="file-name">画质文件合集</div>
     <div class="file-tag">#稳定</div>
     <div class="file-tag">#画质</div>
+    <div class="file-info">
+      <span>大小：<span class="file-size">获取中...</span></span>
+      <span>上传：<span class="file-time">2026-02-21</span></span>
+    </div>
     <div class="file-content">
       提升游戏画质，稳定运行，支持多种分辨率与特效调整
     </div>
@@ -362,9 +382,13 @@ jQuery(document).ready(function($) {
 function checkModal(){
   if(localStorage.getItem('noShowModal') === 'true'){
     document.getElementById('modal').style.display = 'none';
+    return;
   }
+  // 显示弹窗
+  document.getElementById('modal').style.display = 'flex';
 }
-checkModal();
+// 页面加载完检查弹窗
+window.addEventListener('DOMContentLoaded', checkModal);
 
 document.getElementById('closeModal').onclick = function(){
   if(document.getElementById('noShowAgain').checked){
@@ -373,7 +397,7 @@ document.getElementById('closeModal').onclick = function(){
   document.getElementById('modal').style.display = 'none';
 }
 
-// 分类切换：只按稳定/娱乐过滤，其他标签不参与分类
+// 分类切换
 let tabs = document.querySelectorAll('.nav-tab');
 let items = document.querySelectorAll('.file-item');
 let endTip = document.querySelector('.end-tip');
@@ -402,7 +426,7 @@ tabs.forEach(tab=>{
   }
 });
 
-// 搜索：支持关键词和标签（如 #稳定）
+// 搜索功能
 function doSearch(){
   let kw = document.getElementById('searchInput').value.trim().toLowerCase();
   let show = 0;
@@ -433,7 +457,7 @@ document.querySelector('.copy-icon').addEventListener('click', function() {
   });
 });
 
-// 下载文件：自动拼接文件名.zip，使用 GitHub raw 地址直接下载
+// 下载文件
 function downloadFile(btn) {
   const item = btn.closest('.file-item');
   const filename = item.dataset.filename + '.zip';
@@ -447,8 +471,43 @@ function downloadFile(btn) {
   a.click();
   document.body.removeChild(a);
 }
+
+// 核心新增：自动获取文件大小
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// 页面加载完成后，批量获取所有文件大小
+document.addEventListener('DOMContentLoaded', function() {
+  const gitApiBase = 'https://api.github.com/repos/qldwj/qldwj.github.io/contents/文件/';
+  
+  items.forEach(async (item) => {
+    const filename = item.dataset.filename + '.zip';
+    const sizeElement = item.querySelector('.file-size');
+    const timeElement = item.querySelector('.file-time');
+    
+    // 1. 填充手动设置的上传时间
+    timeElement.textContent = item.dataset.time;
+
+    try {
+      // 2. 调用GitHub API获取文件信息
+      const response = await fetch(gitApiBase + encodeURIComponent(filename));
+      if (!response.ok) throw new Error('文件不存在或网络错误');
+      
+      const data = await response.json();
+      // data.size 是字节数，需要格式化
+      sizeElement.textContent = formatFileSize(data.size);
+    } catch (error) {
+      // 获取失败时的容错处理
+      sizeElement.textContent = '未知大小';
+      console.log(`获取 ${filename} 大小失败:`, error);
+    }
+  });
+});
 </script>
 </body>
 </html>
-
-
