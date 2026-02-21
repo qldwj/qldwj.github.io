@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>凄凉文件</title>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui, -apple-system, sans-serif;}
+body{
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 顶部栏 */
+.header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+  color: #fff;
+}
+.refresh-btn{
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* 搜索框 */
+.search-box{
+  display: flex;
+  margin: 16px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.search-input{
+  flex: 1;
+  height: 52px;
+  padding: 0 18px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background: transparent;
+  color: #fff;
+}
+.search-input::placeholder{color: rgba(255,255,255,0.7);}
+.search-btn{
+  width: 52px;
+  height: 52px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.search-btn:hover{background: rgba(255,255,255,0.25);}
+.search-btn svg{width:22px;height:22px;fill:#fff;}
+
+/* 轮播图 */
+.swiper-box{
+  margin: 0 16px 20px;
+  height: 260px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+.swiper-wrapper{
+  display: flex;
+  width: 300%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.swiper-item{
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #000;
+  text-align: center;
+  padding: 20px;
+  background-color: rgba(255,255,255,0.85);
+}
+
+/* 分类导航 */
+.nav-tabs{
+  display: flex;
+  justify-content: space-around;
+  padding: 0 16px 16px;
+  gap: 12px;
+}
+.nav-tab{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 8px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  transition: all 0.3s;
+}
+.nav-tab.active{
+  background: rgba(255,255,255,0.4);
+  color: #222;
+  transform: translateY(-2px);
+}
+.nav-tab svg{width:20px;height:20px;}
+
+/* 密码提示 */
+.pwd-box{
+  margin: 0 16px 20px;
+  padding: 16px;
+  border-radius: 16px;
+  text-align: center;
+  font-weight: bold;
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+}
+
+/* 文件列表 */
+.file-list{
+  padding: 0 16px 20px;
+}
+.file-item{
+  background: rgba(255,255,255,0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+}
+.file-name{
+  font-weight: bold;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+.file-tag{
+  display: inline-block;
+  background: rgba(33,150,243,0.4);
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  margin-right: 8px;
+  margin-bottom: 12px;
+}
+.file-content{
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 18px;
+  color: rgba(255,255,255,0.9);
+}
+.download-btn{
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+.download-btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+.end-tip{
+  text-align: center;
+  color: rgba(255,255,255,0.7);
+  padding: 20px;
+  font-size: 14px;
+  display: none;
+}
+
+/* 弹窗 */
+.modal-back{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.modal-box{
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  width: 90%;
+  max-width: 360px;
+  padding: 28px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+.modal-title{
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 22px;
+  color: #222;
+}
+.modal-row{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 22px;
+  color: #333;
+}
+.modal-btn{
+  padding: 14px 32px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  transition: 0.3s;
+}
+.modal-btn:hover{
+  transform: translateY(-2px);
+}
+</style>
+</head>
+<body>
+
+<!-- 顶部栏 -->
+<div class="header">
+  <div style="display:flex;align-items:center;gap:8px;">
+    <span style="font-size:18px;font-weight:500;">持续更新</span>
+  </div>
+  <button class="refresh-btn" onclick="location.reload()">↻</button>
+</div>
+
+<!-- 搜索框 -->
+<div class="search-box">
+  <input class="search-input" id="searchInput" placeholder="搜索关键词查找文件" type="text">
+  <button class="search-btn" id="searchBtn">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+  </button>
+</div>
+
+<!-- 轮播图 -->
+<div class="swiper-box">
+  <div class="swiper-wrapper" id="swiperWrapper">
+    <div class="swiper-item" style="background-image:url(https://mpimg.cn/view.php/41e24d071315d18e6dc6ee19d3ec3be0.jpeg)">免费好用的文件</div>
+    <div class="swiper-item" style="background-image:url(https://mpimg.cn/view.php/3219b816f3eb396e170b84447c084c59.jpeg)">频道https://t.me/qiliang76nb</div>
+    <div class="swiper-item" style="background-image:url(https://mpimg.cn/view.php/c1fb974634f7fcc77050a36e4015d08b.jpeg)">所有密码为@qiliang76</div>
+  </div>
+</div>
+
+<!-- 分类 -->
+<div class="nav-tabs">
+  <div class="nav-tab active" data-tag="all">
+    <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zM13 3h8v8h-8V3zm0 10h8v8h-8v-8z"/></svg>全部
+  </div>
+  <div class="nav-tab" data-tag="稳定">
+    <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>稳定
+  </div>
+  <div class="nav-tab" data-tag="娱乐">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4-8c0 .55-.45 1-1 1H9c-.55 0-1-.45-1-1s.45-1 1-1h6c.55 0 1 .45 1 1zM8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm7 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/></svg>娱乐
+  </div>
+</div>
+
+<!-- 统一密码 -->
+<div class="pwd-box">所有解压密码 @qiliang76</div>
+
+<!-- 文件列表 -->
+<div class="file-list" id="fileList">
+  <!-- 示例文件：文件名会自动拼接为 4.2赛季上色.zip -->
+  <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色">
+    <div class="file-name">4.2赛季上色</div>
+    <div class="file-tag">#稳定</div>
+    <div class="file-tag">#上色</div>
+    <div class="file-content">
+      稳定,每个版本更新有时会被官方强制删除，需要重复导入<br>
+      功能:<br>
+      除水,除去烟雾弹的雾,敌人上色(黄色)
+    </div>
+    <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
+  </div>
+</div>
+
+<div class="end-tip">——————— 已经滑到底了 ———————</div>
+
+<!-- 弹窗 -->
+<div class="modal-back" id="modal">
+  <div class="modal-box">
+    <div class="modal-title">所有文件解压密码 @qiliang76</div>
+    <div class="modal-row">
+      <label style="font-size:14px;user-select:none;">
+        <input type="checkbox" id="noShowAgain"> 不再提示
+      </label>
+    </div>
+    <button class="modal-btn" id="closeModal">关闭</button>
+  </div>
+</div>
+
+<script>
+// 标题打字动画
+var tx=new Array("欢迎访问凄凉文件","本站文件免费使用","持续更新……","等你探索","谢谢访问","使用文件需注意安全","站长QQ:2912178191");
+var txcount=tx.length;
+var i=1;
+var wo=0;
+var ud=1;
+function animatetitle(){
+  window.document.title=tx[wo].substr(0,i)+"";
+  if(ud==0)i--;
+  if(ud==1)i++;
+  if(i==-1){ud=1;i=0;wo++;wo=wo%txcount;}
+  if(i==tx[wo].length+10){ud=0;i=tx[wo].length;}
+  setTimeout(animatetitle,100);
+}
+animatetitle();
+
+// 点击文字特效
+var a_idx = 0;
+jQuery(document).ready(function($) {
+  $("body").click(function(e) {
+    var a = new Array("富强","民主","文明","和谐","自由","平等","公正","法治","爱国","敬业","诚信","友善","凄凉");
+    var b = new Array("#ff4444","#2196f3","#ffc107","#4caf50","#e91e63","#2196f3","#ff9800","#9c27b0","#ff5722","#00bcd4","#8bc34a","#607d8b","#ffffff");
+    var $i = $("<span/>").text(a[a_idx]);
+    a_idx = (a_idx + 1) % a.length;
+    var b_idx = (a_idx) % b.length;
+    var x = e.pageX, y = e.pageY;
+    $i.css({
+      "z-index":9999,
+      "top":y-20,
+      "left":x,
+      "position":"absolute",
+      "font-weight":"bold",
+      "font-size":"15px",
+      "color":b[b_idx]
+    });
+    $("body").append($i);
+    $i.animate({
+      "top":y-180,
+      "opacity":0
+    },1500,function(){
+      $i.remove();
+    });
+  });
+});
+
+// 轮播：横向滑动
+let swiperWrapper = document.getElementById('swiperWrapper');
+let slideIndex = 0;
+function slideNext(){
+  slideIndex++;
+  if(slideIndex >= 3) slideIndex = 0;
+  swiperWrapper.style.transform = `translateX(-${slideIndex * 100}%)`;
+}
+setInterval(slideNext, 3000);
+
+// 弹窗 + 不再提示
+function checkModal(){
+  if(localStorage.getItem('noShowModal') === 'true'){
+    document.getElementById('modal').style.display = 'none';
+  }
+}
+checkModal();
+
+document.getElementById('closeModal').onclick = function(){
+  if(document.getElementById('noShowAgain').checked){
+    localStorage.setItem('noShowModal','true');
+  }
+  document.getElementById('modal').style.display = 'none';
+}
+
+// 分类切换：只按稳定/娱乐过滤，其他标签不参与分类
+let tabs = document.querySelectorAll('.nav-tab');
+let items = document.querySelectorAll('.file-item');
+let endTip = document.querySelector('.end-tip');
+
+tabs.forEach(tab=>{
+  tab.onclick = function(){
+    tabs.forEach(t=>t.classList.remove('active'));
+    this.classList.add('active');
+    let tag = this.dataset.tag;
+    let show = 0;
+    items.forEach(el=>{
+      let tags = el.dataset.tags.split(',');
+      if(tag === 'all'){
+        el.style.display = 'block';
+        show++;
+      } else {
+        if(tags.includes(tag)){
+          el.style.display = 'block';
+          show++;
+        } else {
+          el.style.display = 'none';
+        }
+      }
+    });
+    endTip.style.display = show === 0 ? 'block' : 'none';
+  }
+});
+
+// 搜索
+function doSearch(){
+  let kw = document.getElementById('searchInput').value.trim().toLowerCase();
+  let show = 0;
+  items.forEach(el=>{
+    let t = el.innerText.toLowerCase();
+    if(t.includes(kw)){
+      el.style.display='block';show++;
+    }else{
+      el.style.display='none';
+    }
+  });
+  endTip.style.display = show==0 ? 'block' : 'none';
+}
+document.getElementById('searchBtn').onclick = doSearch;
+document.getElementById('searchInput').onkeyup = e=>{
+  if(e.key=='Enter') doSearch();
+}
+
+// 下载文件：自动拼接文件名.zip，使用你指定的GitHub地址
+function downloadFile(btn) {
+  const item = btn.closest('.file-item');
+  const filename = item.dataset.filename + '.zip';
+  const gitBase = 'https://github.com/qldwj/qldwj.github.io/blob/main/文件/';
+  const downloadUrl = gitBase + encodeURIComponent(filename);
+  
+  const a = document.createElement('a');
+  a.href = downloadUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
+</body>
+</html>
