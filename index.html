@@ -302,7 +302,7 @@ body{
 <!-- 弹窗 -->
 <div class="modal-back" id="modal">
   <div class="modal-box">
-    <div class="modal-title">所有解压密码 @qiliang76</div>
+    <div class="modal-title">所有文件解压密码 @qiliang76</div>
     <div class="modal-row">
       <label style="font-size:14px;user-select:none;">
         <input type="checkbox" id="noShowAgain"> 不再提示
@@ -373,60 +373,55 @@ document.getElementById('closeModal').onclick = function(){
   document.getElementById('modal').style.display = 'none';
 }
 
+// 分类切换：只按稳定/娱乐过滤，其他标签不参与分类
 let tabs = document.querySelectorAll('.nav-tab');
 let items = document.querySelectorAll('.file-item');
 let endTip = document.querySelector('.end-tip');
 
-// 统一更新显示状态
-function updateEndTip() {
-  let hasVisible = false;
-  items.forEach(el => {
-    if (el.style.display !== 'none') {
-      hasVisible = true;
-    }
-  });
-  // 只要当前没有显示的文件，就显示到底提示
-  endTip.style.display = hasVisible ? 'none' : 'block';
-}
-
-// 分类切换
 tabs.forEach(tab=>{
   tab.onclick = function(){
     tabs.forEach(t=>t.classList.remove('active'));
     this.classList.add('active');
     let tag = this.dataset.tag;
-
+    let show = 0;
     items.forEach(el=>{
       let tags = el.dataset.tags.split(',');
-      if(tag === 'all' || tags.includes(tag)){
+      if(tag === 'all'){
         el.style.display = 'block';
+        show++;
       } else {
-        el.style.display = 'none';
+        if(tags.includes(tag)){
+          el.style.display = 'block';
+          show++;
+        } else {
+          el.style.display = 'none';
+        }
       }
     });
-
-    updateEndTip();
+    endTip.style.display = show === 0 ? 'block' : 'none';
   }
 });
 
-// 搜索
+// 搜索：支持关键词和标签（如 #稳定）
 function doSearch(){
   let kw = document.getElementById('searchInput').value.trim().toLowerCase();
+  let show = 0;
   items.forEach(el=>{
     let text = el.innerText.toLowerCase();
     let tags = el.dataset.tags.split(',').map(t=>`#${t}`).join(' ').toLowerCase();
     if(text.includes(kw) || tags.includes(kw)){
       el.style.display='block';
+      show++;
     }else{
       el.style.display='none';
     }
   });
-  updateEndTip();
+  endTip.style.display = show==0 ? 'block' : 'none';
 }
 document.getElementById('searchBtn').onclick = doSearch;
 document.getElementById('searchInput').onkeyup = e=>{
   if(e.key=='Enter') doSearch();
-});
+}
 
 // 复制密码
 document.querySelector('.copy-icon').addEventListener('click', function() {
@@ -438,7 +433,7 @@ document.querySelector('.copy-icon').addEventListener('click', function() {
   });
 });
 
-// 下载文件
+// 下载文件：自动拼接文件名.zip，使用 GitHub raw 地址直接下载
 function downloadFile(btn) {
   const item = btn.closest('.file-item');
   const filename = item.dataset.filename + '.zip';
@@ -452,10 +447,8 @@ function downloadFile(btn) {
   a.click();
   document.body.removeChild(a);
 }
-
-// 页面刚加载就执行一次，确保状态正确
-updateEndTip();
 </script>
 </body>
 </html>
+
 
