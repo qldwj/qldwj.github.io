@@ -93,6 +93,34 @@ body{
   box-shadow: 0 4px 30px rgba(0,0,0,0.1);
   border: 1px solid rgba(255,255,255,0.3);
   color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.copy-icon{
+  cursor: pointer;
+  transition: 0.2s;
+}
+.copy-icon:hover{
+  transform: scale(1.1);
+}
+.copy-toast{
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 9999;
+}
+.copy-toast.show{
+  opacity: 1;
 }
 
 /* 文件列表 */
@@ -213,7 +241,7 @@ body{
 
 <!-- 搜索框 -->
 <div class="search-box">
-  <input class="search-input" id="searchInput" placeholder="搜索关键词查找文件" type="text">
+  <input class="search-input" id="searchInput" placeholder="搜索关键词或标签（如 #稳定）查找文件" type="text">
   <button class="search-btn" id="searchBtn">
     <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
   </button>
@@ -233,7 +261,14 @@ body{
 </div>
 
 <!-- 统一密码 -->
-<div class="pwd-box">所有解压密码 @qiliang76</div>
+<div class="pwd-box">
+  <span>所有解压密码 @qiliang76</span>
+  <svg class="copy-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+  </svg>
+</div>
+<div class="copy-toast">密码已复制</div>
 
 <!-- 文件列表 -->
 <div class="file-list" id="fileList">
@@ -246,6 +281,17 @@ body{
       稳定,每个版本更新有时会被官方强制删除，需要重复导入<br>
       功能:<br>
       除水,除去烟雾弹的雾,敌人上色(黄色)
+    </div>
+    <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
+  </div>
+
+  <!-- 新增：画质文件合集 -->
+  <div class="file-item" data-tags="稳定,画质" data-filename="画质文件合集">
+    <div class="file-name">画质文件合集</div>
+    <div class="file-tag">#稳定</div>
+    <div class="file-tag">#画质</div>
+    <div class="file-content">
+      提升游戏画质，稳定运行，支持多种分辨率与特效调整
     </div>
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
@@ -356,14 +402,16 @@ tabs.forEach(tab=>{
   }
 });
 
-// 搜索
+// 搜索：支持关键词和标签（如 #稳定）
 function doSearch(){
   let kw = document.getElementById('searchInput').value.trim().toLowerCase();
   let show = 0;
   items.forEach(el=>{
-    let t = el.innerText.toLowerCase();
-    if(t.includes(kw)){
-      el.style.display='block';show++;
+    let text = el.innerText.toLowerCase();
+    let tags = el.dataset.tags.split(',').map(t=>`#${t}`).join(' ').toLowerCase();
+    if(text.includes(kw) || tags.includes(kw)){
+      el.style.display='block';
+      show++;
     }else{
       el.style.display='none';
     }
@@ -375,7 +423,17 @@ document.getElementById('searchInput').onkeyup = e=>{
   if(e.key=='Enter') doSearch();
 }
 
-// 下载文件：自动拼接文件名.zip，使用你指定的GitHub地址
+// 复制密码
+document.querySelector('.copy-icon').addEventListener('click', function() {
+  const pwd = '@qiliang76';
+  navigator.clipboard.writeText(pwd).then(() => {
+    const toast = document.querySelector('.copy-toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2000);
+  });
+});
+
+// 下载文件：自动拼接文件名.zip，使用 GitHub raw 地址直接下载
 function downloadFile(btn) {
   const item = btn.closest('.file-item');
   const filename = item.dataset.filename + '.zip';
@@ -392,6 +450,7 @@ function downloadFile(btn) {
 </script>
 </body>
 </html>
+
 
 
 
