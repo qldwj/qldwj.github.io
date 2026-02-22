@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -105,23 +106,6 @@ body{
 .copy-icon:hover{
   transform: scale(1.1);
 }
-.copy-toast{
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.8);
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  z-index: 9999;
-}
-.copy-toast.show{
-  opacity: 1;
-}
 
 /* 文件列表 */
 .file-list{
@@ -176,6 +160,11 @@ body{
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
 }
+.download-btn:disabled{
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
 .end-tip{
   text-align: center;
   color: rgba(255,255,255,0.7);
@@ -213,13 +202,18 @@ body{
   margin-bottom: 22px;
   color: #222;
 }
-.modal-row{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 22px;
-  color: #333;
+.modal-desc{
+  font-size: 15px;
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+.modal-contact{
+  color: #2196f3;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 20px;
+  text-decoration: underline;
 }
 .modal-btn{
   padding: 14px 32px;
@@ -234,6 +228,11 @@ body{
 }
 .modal-btn:hover{
   transform: translateY(-2px);
+}
+
+/* 404提示专用弹窗 */
+#errorModal{
+  display: none;
 }
 </style>
 </head>
@@ -268,13 +267,13 @@ body{
     <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
   </svg>
 </div>
-<div class="copy-toast">密码已复制</div>
 
 <!-- 文件列表 -->
 <div class="file-list" id="fileList">
-  <!-- 示例文件：文件名会自动拼接为 4.2赛季上色.zip -->
-  <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色">
-    <div class="file-name">4.2赛季上色</div>
+
+  <!-- 4.2赛季上色(全球) -->
+  <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色(全球)">
+    <div class="file-name">4.2赛季上色(全球)</div>
     <div class="file-tag">#稳定</div>
     <div class="file-tag">#上色</div>
     <div class="file-content">
@@ -285,7 +284,20 @@ body{
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
 
-  <!-- 新增：画质文件合集 -->
+  <!-- 4.2赛季上色(日韩) -->
+  <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色(日韩)">
+    <div class="file-name">4.2赛季上色(日韩)</div>
+    <div class="file-tag">#稳定</div>
+    <div class="file-tag">#上色</div>
+    <div class="file-content">
+      稳定,每个版本更新有时会被官方强制删除，需要重复导入<br>
+      功能:<br>
+      除水,除去烟雾弹的雾,敌人上色(黄色)
+    </div>
+    <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
+  </div>
+
+  <!-- 画质文件合集 -->
   <div class="file-item" data-tags="稳定,画质" data-filename="画质文件合集">
     <div class="file-name">画质文件合集</div>
     <div class="file-tag">#稳定</div>
@@ -295,11 +307,12 @@ body{
     </div>
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
+
 </div>
 
 <div class="end-tip">——————— 已经滑到底了 ———————</div>
 
-<!-- 弹窗 -->
+<!-- 密码提示弹窗 -->
 <div class="modal-back" id="modal">
   <div class="modal-box">
     <div class="modal-title">所有文件解压密码 @qiliang76</div>
@@ -309,6 +322,16 @@ body{
       </label>
     </div>
     <button class="modal-btn" id="closeModal">关闭</button>
+  </div>
+</div>
+
+<!-- 404错误弹窗 -->
+<div class="modal-back" id="errorModal">
+  <div class="modal-box">
+    <div class="modal-title">文件不存在</div>
+    <div class="modal-desc">此文件被删除或正在更新，请稍后下载</div>
+    <div class="modal-contact" onclick="goContact()">联系开发者</div>
+    <button class="modal-btn" onclick="closeErrorModal()">确认</button>
   </div>
 </div>
 
@@ -358,7 +381,7 @@ jQuery(document).ready(function($) {
   });
 });
 
-// 弹窗 + 不再提示
+// 密码弹窗
 function checkModal(){
   if(localStorage.getItem('noShowModal') === 'true'){
     document.getElementById('modal').style.display = 'none';
@@ -373,7 +396,18 @@ document.getElementById('closeModal').onclick = function(){
   document.getElementById('modal').style.display = 'none';
 }
 
-// 分类切换：只按稳定/娱乐过滤，其他标签不参与分类
+// 404弹窗控制
+function showErrorModal(){
+  document.getElementById('errorModal').style.display = 'flex';
+}
+function closeErrorModal(){
+  document.getElementById('errorModal').style.display = 'none';
+}
+function goContact(){
+  window.open('https://t.me/qiliangnb','_blank');
+}
+
+// 分类切换
 let tabs = document.querySelectorAll('.nav-tab');
 let items = document.querySelectorAll('.file-item');
 let endTip = document.querySelector('.end-tip');
@@ -402,7 +436,7 @@ tabs.forEach(tab=>{
   }
 });
 
-// 搜索：支持关键词和标签（如 #稳定）
+// 搜索
 function doSearch(){
   let kw = document.getElementById('searchInput').value.trim().toLowerCase();
   let show = 0;
@@ -426,26 +460,65 @@ document.getElementById('searchInput').onkeyup = e=>{
 // 复制密码
 document.querySelector('.copy-icon').addEventListener('click', function() {
   const pwd = '@qiliang76';
-  navigator.clipboard.writeText(pwd).then(() => {
-    const toast = document.querySelector('.copy-toast');
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2000);
-  });
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(pwd).then(() => {
+      alert('密码已复制');
+    });
+  } else {
+    alert('密码：@qiliang76');
+  }
 });
 
-// 下载文件：自动拼接文件名.zip，使用 GitHub raw 地址直接下载
-function downloadFile(btn) {
-  const item = btn.closest('.file-item');
-  const filename = item.dataset.filename + '.zip';
-  const gitBase = 'https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/文件/';
-  const downloadUrl = gitBase + encodeURIComponent(filename);
-  
-  const a = document.createElement('a');
-  a.href = downloadUrl;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+// 下载文件 + 404检测 + 弹窗
+async function downloadFile(btn) {
+  const originalText = btn.innerText;
+  btn.innerText = '检测中...';
+  btn.disabled = true;
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  try {
+    const item = btn.closest('.file-item');
+    const filename = item.dataset.filename + '.zip';
+    const gitBase = 'https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/文件/';
+    const downloadUrl = gitBase + encodeURIComponent(filename);
+
+    const response = await fetch(downloadUrl, {
+      method: 'HEAD',
+      signal: signal
+    });
+
+    controller.abort();
+
+    if (response.ok) {
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } else if (response.status === 404) {
+      showErrorModal();
+    }
+  } catch (e) {
+    try {
+      const item = btn.closest('.file-item');
+      const filename = item.dataset.filename + '.zip';
+      const gitBase = 'https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/文件/';
+      const downloadUrl = gitBase + encodeURIComponent(filename);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      showErrorModal();
+    }
+  } finally {
+    btn.innerText = originalText;
+    btn.disabled = false;
+  }
 }
 </script>
 </body>
