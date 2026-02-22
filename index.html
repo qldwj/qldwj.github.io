@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -234,6 +233,23 @@ body{
 #errorModal{
   display: none;
 }
+
+/* 娱乐风险弹窗 */
+#riskModal{
+  display: none;
+}
+.risk-btn-group{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.risk-confirm{
+  background: #ff4444;
+}
+.risk-close{
+  background: #999;
+}
+
 </style>
 </head>
 <body>
@@ -308,9 +324,6 @@ body{
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
 
-</div>
-
-
   <div class="file-item" data-tags="娱乐,美化" data-filename="美化v1">
     <div class="file-name">美化v1</div>
     <div class="file-tag">#娱乐</div>
@@ -322,6 +335,9 @@ body{
     </div>
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
+
+</div>
+
 <div class="end-tip">——————— 已经滑到底了 ———————</div>
 
 <!-- 密码提示弹窗 -->
@@ -347,7 +363,25 @@ body{
   </div>
 </div>
 
+<!-- 娱乐风险弹窗 -->
+<div class="modal-back" id="riskModal">
+  <div class="modal-box">
+    <div class="modal-title" style="color:#ff4444">⚠️ 娱乐功能风险提示</div>
+    <div class="modal-desc">
+      娱乐类文件可能违反游戏用户协议，<br>
+      使用有概率导致封号/封禁设备！<br>
+      请确认你已知晓风险并自愿使用。
+    </div>
+    <div class="risk-btn-group">
+      <button class="modal-btn risk-close" onclick="closeRiskModal()">关闭取消</button>
+      <button class="modal-btn risk-confirm" onclick="confirmRiskDownload()">确定继续</button>
+    </div>
+  </div>
+</div>
+
 <script>
+var currentDownloadBtn = null;
+
 // 标题打字动画
 var tx=new Array("欢迎访问凄凉文件","本站文件免费使用","持续更新……","等你探索","谢谢访问","使用文件需注意安全","站长QQ:2912178191");
 var txcount=tx.length;
@@ -419,6 +453,23 @@ function goContact(){
   window.open('https://t.me/qiliangnb','_blank');
 }
 
+// 娱乐风险弹窗
+function showRiskModal(btn){
+  currentDownloadBtn = btn;
+  document.getElementById('riskModal').style.display = 'flex';
+}
+function closeRiskModal(){
+  document.getElementById('riskModal').style.display = 'none';
+  currentDownloadBtn = null;
+}
+function confirmRiskDownload(){
+  document.getElementById('riskModal').style.display = 'none';
+  if(currentDownloadBtn){
+    realDownload(currentDownloadBtn);
+  }
+  currentDownloadBtn = null;
+}
+
 // 分类切换
 let tabs = document.querySelectorAll('.nav-tab');
 let items = document.querySelectorAll('.file-item');
@@ -481,8 +532,19 @@ document.querySelector('.copy-icon').addEventListener('click', function() {
   }
 });
 
-// 下载文件 + 404检测 + 弹窗
-async function downloadFile(btn) {
+// 下载文件 + 娱乐检测
+function downloadFile(btn) {
+  const item = btn.closest('.file-item');
+  const tags = item.dataset.tags.split(',');
+  if(tags.includes('娱乐')){
+    showRiskModal(btn);
+    return;
+  }
+  realDownload(btn);
+}
+
+// 真实下载逻辑
+async function realDownload(btn) {
   const originalText = btn.innerText;
   btn.innerText = '检测中...';
   btn.disabled = true;
@@ -535,6 +597,3 @@ async function downloadFile(btn) {
 </script>
 </body>
 </html>
-
-
-
