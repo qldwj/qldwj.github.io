@@ -310,6 +310,18 @@ body{
 
 </div>
 
+
+  <div class="file-item" data-tags="娱乐,美化" data-filename="美化v1">
+    <div class="file-name">美化v1</div>
+    <div class="file-tag">#娱乐</div>
+    <div class="file-tag">#美化</div>
+    <div class="file-content">
+      娱乐,防重置<br>
+      功能:<br>
+      里面查看
+    </div>
+    <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
+  </div>
 <div class="end-tip">——————— 已经滑到底了 ———————</div>
 
 <!-- 密码提示弹窗 -->
@@ -329,8 +341,8 @@ body{
 <div class="modal-back" id="errorModal">
   <div class="modal-box">
     <div class="modal-title">文件不存在</div>
-    <div class="modal-desc">此文件被删除或正在更新，请稍后下载</div>
-    <div class="modal-contact" onclick="goContact()">联系开发者</div>
+    <div class="modal-desc">此文件被删除或正在更新，请稍后下载,可点击下面蓝色按钮联系开发者</div>
+    <div class="modal-contact" onclick="goContact()">联系开发者添加</div>
     <button class="modal-btn" onclick="closeErrorModal()">确认</button>
   </div>
 </div>
@@ -523,4 +535,6 @@ async function downloadFile(btn) {
 </script>
 </body>
 </html>
+
+
 
