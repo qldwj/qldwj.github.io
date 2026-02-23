@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>凄凉文件</title>
-<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+<!-- 修复：使用国内CDN确保jQuery稳定加载，防止JS报错导致白屏 -->
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui, -apple-system, sans-serif;}
 body{
@@ -12,13 +13,9 @@ body{
   min-height: 100vh;
   overflow-x: hidden;
   scroll-behavior: smooth;
-}
-
-/* 滑动流畅优化 */
-.file-list{
-  padding: 0 16px 20px;
+  /* 修复：强制硬件加速，解决滑动卡顿 */
+  -webkit-transform: translateZ(0);
   transform: translateZ(0);
-  backface-visibility: hidden;
 }
 
 /* 搜索框 */
@@ -156,7 +153,7 @@ body{
   border: 1px solid rgba(255,255,255,0.2);
   color: #fff;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: all 0.25s ease;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -178,13 +175,17 @@ body{
   font-size: 12px;
   margin-right: 6px;
 }
-/* 默认隐藏详情 */
+
+/* 修复：添加淡出动画效果 */
 .file-content, .download-btn{
   display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
-/* 展开后显示详情 */
+/* 展开后显示并淡入 */
 .file-item.active .file-content{
   display: block;
+  opacity: 1;
   font-size: 14px;
   line-height: 1.6;
   color: rgba(255,255,255,0.9);
@@ -192,6 +193,7 @@ body{
 }
 .file-item.active .download-btn{
   display: block;
+  opacity: 1;
   width: 100%;
   padding: 14px;
   border: none;
@@ -220,6 +222,14 @@ body{
   display: none;
 }
 
+.loading-tip{
+  text-align: center;
+  color: rgba(255,255,255,0.7);
+  padding: 10px;
+  font-size: 13px;
+  display: none;
+}
+
 /* 详情弹窗 */
 .modal-back{
   position: fixed;
@@ -231,6 +241,8 @@ body{
   justify-content: center;
   z-index: 9999;
   backdrop-filter: blur(4px);
+  /* 修复：初始状态隐藏，防止白屏闪烁 */
+  display: none;
 }
 .modal-box{
   background: rgba(255,255,255,0.95);
@@ -422,6 +434,13 @@ body{
 </div>
 
 <script>
+// 修复1：解决返回空白页 - 监听页面显示，强制刷新缓存页面
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    window.location.reload();
+  }
+});
+
 var currentDownloadBtn = null;
 
 // 标题打字
@@ -450,6 +469,23 @@ $(function(){
       fontSize:"15px", color:b[a_idx%b.length]
     });
     $("body").append($i).animate({top:"-=80",opacity:0},1500,function(){$i.remove();});
+  });
+
+  // 修复2：文件点击交互 - 严格阻止冒泡，实现互斥展开
+  $('.file-item').click(function(e){
+    // 点击下载按钮时不触发展开/收起
+    if($(e.target).hasClass('download-btn')) {
+      e.stopPropagation();
+      return;
+    }
+    // 修复：点击当前活跃项则收起，否则先关闭所有再打开当前
+    if($(this).hasClass('active')){
+      $(this).removeClass('active');
+    } else {
+      $('.file-item').removeClass('active');
+      $(this).addClass('active');
+    }
+    e.stopPropagation();
   });
 });
 
@@ -514,12 +550,6 @@ $('.copy-icon').click(function(){
   navigator.clipboard.writeText('@qiliang76').then(()=>alert('密码已复制'));
 });
 
-// 点击文件展开/收起
-$('.file-item').click(function(e){
-  if($(e.target).hasClass('download-btn')) return;
-  $(this).toggleClass('active');
-});
-
 // 跳转问题汇总
 function jumpToQuestion(){
   location.href='问题汇总.html';
@@ -550,4 +580,5 @@ async function realDownload(btn){
 </script>
 </body>
 </html>
+
 
