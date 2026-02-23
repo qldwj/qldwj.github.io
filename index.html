@@ -11,6 +11,14 @@ body{
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   min-height: 100vh;
   overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* 滑动流畅优化 */
+.file-list{
+  padding: 0 16px 20px;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 /* 搜索框 */
@@ -19,10 +27,10 @@ body{
   margin: 16px;
   border-radius: 16px;
   overflow: hidden;
-  background: rgba(255,255,255,0.2);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
 }
 .search-input{
   flex: 1;
@@ -39,14 +47,14 @@ body{
   width: 52px;
   height: 52px;
   border: none;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.1);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: 0.2s;
 }
-.search-btn:hover{background: rgba(255,255,255,0.25);}
+.search-btn:hover{background: rgba(255,255,255,0.2);}
 .search-btn svg{width:22px;height:22px;fill:#fff;}
 
 /* 分类导航 */
@@ -54,32 +62,65 @@ body{
   display: flex;
   justify-content: space-around;
   padding: 0 16px 16px;
-  gap: 12px;
+  gap: 10px;
 }
 .nav-tab{
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 14px 8px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.2);
+  gap: 6px;
+  padding: 12px 6px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.15);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
-  border: 1px solid rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.2);
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #fff;
-  transition: all 0.3s;
+  transition: all 0.25s ease;
 }
 .nav-tab.active{
-  background: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.35);
   color: #222;
   transform: translateY(-2px);
 }
-.nav-tab svg{width:20px;height:20px;}
+.nav-tab svg{width:18px;height:18px;}
+
+/* 问题汇总大公告框 */
+.question-box{
+  margin: 0 16px 16px;
+  padding: 22px;
+  border-radius: 20px;
+  text-align: center;
+  font-weight: bold;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.question-box::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: 0.5s;
+}
+.question-box:hover::before{left:100%;}
+.question-box:hover{
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.35);
+}
 
 /* 密码提示 */
 .pwd-box{
@@ -90,7 +131,6 @@ body{
   font-weight: bold;
   background: rgba(255,255,255,0.2);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
   border: 1px solid rgba(255,255,255,0.3);
   color: #fff;
   display: flex;
@@ -106,104 +146,109 @@ body{
   transform: scale(1.1);
 }
 
-/* 文件列表 */
-.file-list{
-  padding: 0 16px 20px;
-}
+/* 简约文件列表（只显示一行） */
 .file-item{
-  background: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.15);
   backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 16px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(255,255,255,0.2);
   color: #fff;
+  cursor: pointer;
+  transition: 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.file-item:hover{
+  background: rgba(255,255,255,0.25);
+  transform: translateX(4px);
 }
 .file-name{
-  font-weight: bold;
-  font-size: 22px;
-  margin-bottom: 10px;
+  font-weight: 600;
+  font-size: 16px;
 }
 .file-tag{
   display: inline-block;
-  background: rgba(33,150,243,0.4);
+  background: rgba(33,150,243,0.35);
   color: #fff;
-  padding: 5px 12px;
-  border-radius: 12px;
-  font-size: 13px;
-  margin-right: 8px;
-  margin-bottom: 12px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  margin-right: 6px;
 }
-.file-content{
-  font-size: 15px;
-  line-height: 1.7;
-  margin-bottom: 18px;
+/* 默认隐藏详情 */
+.file-content, .download-btn{
+  display: none;
+}
+/* 展开后显示详情 */
+.file-item.active .file-content{
+  display: block;
+  font-size: 14px;
+  line-height: 1.6;
   color: rgba(255,255,255,0.9);
+  margin-top: 6px;
 }
-.download-btn{
+.file-item.active .download-btn{
   display: block;
   width: 100%;
-  padding: 16px;
+  padding: 14px;
   border: none;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.2);
   color: #fff;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.3s;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: 0.2s;
+  margin-top: 10px;
 }
 .download-btn:hover{
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  background: rgba(255,255,255,0.3);
 }
 .download-btn:disabled{
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none;
 }
+
 .end-tip{
   text-align: center;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255,255,255,0.6);
   padding: 20px;
-  font-size: 14px;
+  font-size: 13px;
   display: none;
 }
 
-/* 弹窗 */
+/* 详情弹窗 */
 .modal-back{
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  backdrop-filter: blur(4px);
 }
 .modal-box{
   background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(10px);
   width: 90%;
-  max-width: 360px;
+  max-width: 380px;
   padding: 28px;
   border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
 }
 .modal-title{
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 22px;
+  margin-bottom: 16px;
   color: #222;
 }
 .modal-desc{
-  font-size: 15px;
-  color: #444;
+  font-size: 14px;
+  color: #555;
   line-height: 1.6;
   margin-bottom: 20px;
 }
@@ -211,31 +256,24 @@ body{
   color: #2196f3;
   font-weight: bold;
   cursor: pointer;
-  margin-bottom: 20px;
   text-decoration: underline;
 }
 .modal-btn{
-  padding: 14px 32px;
+  padding: 14px 28px;
   border: none;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 14px;
+  background: #667eea;
   color: #fff;
-  cursor: pointer;
   font-size: 15px;
   font-weight: 600;
-  transition: 0.3s;
+  cursor: pointer;
+  transition: 0.2s;
 }
 .modal-btn:hover{
-  transform: translateY(-2px);
+  opacity: 0.9;
 }
 
-/* 404提示专用弹窗 */
-#errorModal{
-  display: none;
-}
-
-/* 娱乐风险弹窗 */
-#riskModal{
+#errorModal, #riskModal{
   display: none;
 }
 .risk-btn-group{
@@ -247,16 +285,17 @@ body{
   background: #ff4444;
 }
 .risk-close{
-  background: #999;
+  background: #888;
 }
 
 </style>
 </head>
+
 <body>
 
 <!-- 搜索框 -->
 <div class="search-box">
-  <input class="search-input" id="searchInput" placeholder="搜索关键词或标签（如 #稳定）查找文件" type="text">
+  <input class="search-input" id="searchInput" placeholder="搜索关键词或标签" type="text">
   <button class="search-btn" id="searchBtn">
     <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
   </button>
@@ -275,7 +314,12 @@ body{
   </div>
 </div>
 
-<!-- 统一密码 -->
+<!-- 问题汇总 大框 -->
+<div class="question-box" onclick="jumpToQuestion()">
+  📌 所有问题点这里查看 → 问题汇总
+</div>
+
+<!-- 密码 -->
 <div class="pwd-box">
   <span>所有解压密码 @qiliang76</span>
   <svg class="copy-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -287,37 +331,38 @@ body{
 <!-- 文件列表 -->
 <div class="file-list" id="fileList">
 
-  <!-- 4.2赛季上色(全球) -->
   <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色(全球)">
     <div class="file-name">4.2赛季上色(全球)</div>
-    <div class="file-tag">#稳定</div>
-    <div class="file-tag">#上色</div>
+    <div>
+      <span class="file-tag">#稳定</span>
+      <span class="file-tag">#上色</span>
+    </div>
     <div class="file-content">
       稳定,每个版本更新有时会被官方强制删除，需要重复导入<br>
-      功能:<br>
-      除水,除去烟雾弹的雾,敌人上色(黄色)
+      功能: 除水,除去烟雾弹的雾,敌人上色(黄色)
     </div>
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
 
-  <!-- 4.2赛季上色(日韩) -->
   <div class="file-item" data-tags="稳定,上色" data-filename="4.2赛季上色(日韩)">
     <div class="file-name">4.2赛季上色(日韩)</div>
-    <div class="file-tag">#稳定</div>
-    <div class="file-tag">#上色</div>
+    <div>
+      <span class="file-tag">#稳定</span>
+      <span class="file-tag">#上色</span>
+    </div>
     <div class="file-content">
       稳定,每个版本更新有时会被官方强制删除，需要重复导入<br>
-      功能:<br>
-      除水,除去烟雾弹的雾,敌人上色(黄色)
+      功能: 除水,除去烟雾弹的雾,敌人上色(黄色)
     </div>
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
 
-  <!-- 画质文件合集 -->
   <div class="file-item" data-tags="稳定,画质" data-filename="画质文件合集">
     <div class="file-name">画质文件合集</div>
-    <div class="file-tag">#稳定</div>
-    <div class="file-tag">#画质</div>
+    <div>
+      <span class="file-tag">#稳定</span>
+      <span class="file-tag">#画质</span>
+    </div>
     <div class="file-content">
       提升游戏画质，稳定运行，支持多种分辨率与特效调整
     </div>
@@ -326,12 +371,12 @@ body{
 
   <div class="file-item" data-tags="娱乐,美化" data-filename="美化v1">
     <div class="file-name">美化v1</div>
-    <div class="file-tag">#娱乐</div>
-    <div class="file-tag">#美化</div>
+    <div>
+      <span class="file-tag">#娱乐</span>
+      <span class="file-tag">#美化</span>
+    </div>
     <div class="file-content">
-      娱乐,防重置<br>
-      功能:<br>
-      里面查看
+      娱乐,防重置<br>功能:里面查看
     </div>
     <button class="download-btn" onclick="downloadFile(this)">下载文件</button>
   </div>
@@ -340,30 +385,27 @@ body{
 
 <div class="end-tip">——————— 已经滑到底了 ———————</div>
 
-<!-- 密码提示弹窗 -->
+<!-- 弹窗 -->
 <div class="modal-back" id="modal">
   <div class="modal-box">
     <div class="modal-title">所有文件解压密码 @qiliang76</div>
-    <div class="modal-row">
-      <label style="font-size:14px;user-select:none;">
-        <input type="checkbox" id="noShowAgain"> 不再提示
-      </label>
-    </div>
+    <label style="font-size:14px;">
+      <input type="checkbox" id="noShowAgain"> 不再提示
+    </label>
+    <br><br>
     <button class="modal-btn" id="closeModal">关闭</button>
   </div>
 </div>
 
-<!-- 404错误弹窗 -->
 <div class="modal-back" id="errorModal">
   <div class="modal-box">
     <div class="modal-title">文件不存在</div>
-    <div class="modal-desc">此文件被删除或正在更新，请稍后下载,可点击下面蓝色按钮联系开发者</div>
+    <div class="modal-desc">此文件被删除或正在更新，请稍后下载</div>
     <div class="modal-contact" onclick="goContact()">联系开发者添加</div>
     <button class="modal-btn" onclick="closeErrorModal()">确认</button>
   </div>
 </div>
 
-<!-- 娱乐风险弹窗 -->
 <div class="modal-back" id="riskModal">
   <div class="modal-box">
     <div class="modal-title" style="color:#ff4444">⚠️ 娱乐功能风险提示</div>
@@ -373,8 +415,8 @@ body{
       请确认你已知晓风险并自愿使用。
     </div>
     <div class="risk-btn-group">
-      <button class="modal-btn risk-close" onclick="closeRiskModal()">关闭取消</button>
-      <button class="modal-btn risk-confirm" onclick="confirmRiskDownload()">确定继续</button>
+      <button class="modal-btn risk-close" onclick="closeRiskModal()">取消</button>
+      <button class="modal-btn risk-confirm" onclick="confirmRiskDownload()">继续</button>
     </div>
   </div>
 </div>
@@ -382,218 +424,130 @@ body{
 <script>
 var currentDownloadBtn = null;
 
-// 标题打字动画
-var tx=new Array("欢迎访问凄凉文件","本站文件免费使用","持续更新……","等你探索","谢谢访问","使用文件需注意安全","站长QQ:2912178191");
-var txcount=tx.length;
-var i=1;
-var wo=0;
-var ud=1;
+// 标题打字
+var tx = ["欢迎访问凄凉文件","免费使用","持续更新","注意账号安全","站长QQ:2912178191"];
+var wo=0,i=1,ud=1;
 function animatetitle(){
-  window.document.title=tx[wo].substr(0,i)+"";
-  if(ud==0)i--;
-  if(ud==1)i++;
-  if(i==-1){ud=1;i=0;wo++;wo=wo%txcount;}
-  if(i==tx[wo].length+10){ud=0;i=tx[wo].length;}
-  setTimeout(animatetitle,100);
+  document.title = tx[wo].substr(0,i);
+  ud==1?i++:i--;
+  if(i==-1){ud=1;i=0;wo=(wo+1)%tx.length;}
+  if(i==tx[wo].length+8){ud=0;i=tx[wo].length;}
+  setTimeout(animatetitle,110);
 }
 animatetitle();
 
-// 点击文字特效
-var a_idx = 0;
-jQuery(document).ready(function($) {
-  $("body").click(function(e) {
-    var a = new Array("富强","民主","文明","和谐","自由","平等","公正","法治","爱国","敬业","诚信","友善","凄凉");
-    var b = new Array("#ff4444","#2196f3","#ffc107","#4caf50","#e91e63","#2196f3","#ff9800","#9c27b0","#ff5722","#00bcd4","#8bc34a","#607d8b","#ffffff");
-    var $i = $("<span/>").text(a[a_idx]);
-    a_idx = (a_idx + 1) % a.length;
-    var b_idx = (a_idx) % b.length;
-    var x = e.pageX, y = e.pageY;
+// 点击文字
+var a_idx=0;
+$(function(){
+  $("body").click(function(e){
+    var a=["富强","民主","文明","和谐","凄凉"];
+    var b=["#ff4444","#2196f3","#ffc107","#4caf50","#fff"];
+    var $i=$("<span>").text(a[a_idx]);
+    a_idx=(a_idx+1)%a.length;
     $i.css({
-      "z-index":9999,
-      "top":y-20,
-      "left":x,
-      "position":"absolute",
-      "font-weight":"bold",
-      "font-size":"15px",
-      "color":b[b_idx]
+      zIndex:9999, top:e.pageY-20, left:e.pageX,
+      position:"absolute", fontWeight:"bold",
+      fontSize:"15px", color:b[a_idx%b.length]
     });
-    $("body").append($i);
-    $i.animate({
-      "top":y-180,
-      "opacity":0
-    },1500,function(){
-      $i.remove();
-    });
+    $("body").append($i).animate({top:"-=80",opacity:0},1500,function(){$i.remove();});
   });
 });
 
-// 密码弹窗
+// 弹窗
 function checkModal(){
-  if(localStorage.getItem('noShowModal') === 'true'){
-    document.getElementById('modal').style.display = 'none';
-  }
+  if(localStorage.getItem('noShowModal')=='true') $('#modal').hide();
 }
 checkModal();
+$('#closeModal').click(function(){
+  if($('#noShowAgain').is(':checked')) localStorage.setItem('noShowModal','true');
+  $('#modal').hide();
+});
 
-document.getElementById('closeModal').onclick = function(){
-  if(document.getElementById('noShowAgain').checked){
-    localStorage.setItem('noShowModal','true');
-  }
-  document.getElementById('modal').style.display = 'none';
-}
+function showErrorModal(){$('#errorModal').fadeIn();}
+function closeErrorModal(){$('#errorModal').fadeOut();}
+function goContact(){window.open('https://t.me/qiliangnb','_blank');}
 
-// 404弹窗控制
-function showErrorModal(){
-  document.getElementById('errorModal').style.display = 'flex';
-}
-function closeErrorModal(){
-  document.getElementById('errorModal').style.display = 'none';
-}
-function goContact(){
-  window.open('https://t.me/qiliangnb','_blank');
-}
-
-// 娱乐风险弹窗
+// 风险
 function showRiskModal(btn){
-  currentDownloadBtn = btn;
-  document.getElementById('riskModal').style.display = 'flex';
+  currentDownloadBtn=btn; $('#riskModal').fadeIn();
 }
-function closeRiskModal(){
-  document.getElementById('riskModal').style.display = 'none';
-  currentDownloadBtn = null;
-}
+function closeRiskModal(){$('#riskModal').fadeOut();currentDownloadBtn=null;}
 function confirmRiskDownload(){
-  document.getElementById('riskModal').style.display = 'none';
-  if(currentDownloadBtn){
-    realDownload(currentDownloadBtn);
-  }
-  currentDownloadBtn = null;
+  $('#riskModal').fadeOut();
+  if(currentDownloadBtn) realDownload(currentDownloadBtn);
+  currentDownloadBtn=null;
 }
 
-// 分类切换
-let tabs = document.querySelectorAll('.nav-tab');
-let items = document.querySelectorAll('.file-item');
-let endTip = document.querySelector('.end-tip');
-
-tabs.forEach(tab=>{
-  tab.onclick = function(){
-    tabs.forEach(t=>t.classList.remove('active'));
-    this.classList.add('active');
-    let tag = this.dataset.tag;
-    let show = 0;
-    items.forEach(el=>{
-      let tags = el.dataset.tags.split(',');
-      if(tag === 'all'){
-        el.style.display = 'block';
-        show++;
-      } else {
-        if(tags.includes(tag)){
-          el.style.display = 'block';
-          show++;
-        } else {
-          el.style.display = 'none';
-        }
-      }
-    });
-    endTip.style.display = show === 0 ? 'block' : 'none';
-  }
+// 分类
+$('.nav-tab').click(function(){
+  $('.nav-tab').removeClass('active');
+  $(this).addClass('active');
+  let tag=$(this).data('tag');
+  let show=0;
+  $('.file-item').each(function(){
+    let tags=$(this).data('tags').split(',');
+    if(tag=='all'||tags.includes(tag)){
+      $(this).show();show++;
+    }else{
+      $(this).hide();
+    }
+  });
+  $('.end-tip').css('display',show==0?'block':'none');
 });
 
 // 搜索
 function doSearch(){
-  let kw = document.getElementById('searchInput').value.trim().toLowerCase();
-  let show = 0;
-  items.forEach(el=>{
-    let text = el.innerText.toLowerCase();
-    let tags = el.dataset.tags.split(',').map(t=>`#${t}`).join(' ').toLowerCase();
-    if(text.includes(kw) || tags.includes(kw)){
-      el.style.display='block';
-      show++;
-    }else{
-      el.style.display='none';
-    }
+  let kw=$('#searchInput').val().trim().toLowerCase();
+  let show=0;
+  $('.file-item').each(function(){
+    let t=$(this).text().toLowerCase();
+    if(t.includes(kw)){$(this).show();show++;}
+    else{$(this).hide();}
   });
-  endTip.style.display = show==0 ? 'block' : 'none';
+  $('.end-tip').css('display',show==0?'block':'none');
 }
-document.getElementById('searchBtn').onclick = doSearch;
-document.getElementById('searchInput').onkeyup = e=>{
-  if(e.key=='Enter') doSearch();
-}
+$('#searchBtn').click(doSearch);
+$('#searchInput').keyup(e=>e.key=='Enter'&&doSearch());
 
 // 复制密码
-document.querySelector('.copy-icon').addEventListener('click', function() {
-  const pwd = '@qiliang76';
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(pwd).then(() => {
-      alert('密码已复制');
-    });
-  } else {
-    alert('密码：@qiliang76');
-  }
+$('.copy-icon').click(function(){
+  navigator.clipboard.writeText('@qiliang76').then(()=>alert('密码已复制'));
 });
 
-// 下载文件 + 娱乐检测
-function downloadFile(btn) {
-  const item = btn.closest('.file-item');
-  const tags = item.dataset.tags.split(',');
-  if(tags.includes('娱乐')){
-    showRiskModal(btn);
-    return;
-  }
+// 点击文件展开/收起
+$('.file-item').click(function(e){
+  if($(e.target).hasClass('download-btn')) return;
+  $(this).toggleClass('active');
+});
+
+// 跳转问题汇总
+function jumpToQuestion(){
+  location.href='问题汇总.html';
+}
+
+// 下载
+function downloadFile(btn){
+  let tags=$(btn).closest('.file-item').data('tags').split(',');
+  if(tags.includes('娱乐')){showRiskModal(btn);return;}
   realDownload(btn);
 }
 
-// 真实下载逻辑
-async function realDownload(btn) {
-  const originalText = btn.innerText;
-  btn.innerText = '检测中...';
-  btn.disabled = true;
-  const controller = new AbortController();
-  const signal = controller.signal;
-
-  try {
-    const item = btn.closest('.file-item');
-    const filename = item.dataset.filename + '.zip';
-    const gitBase = 'https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/文件/';
-    const downloadUrl = gitBase + encodeURIComponent(filename);
-
-    const response = await fetch(downloadUrl, {
-      method: 'HEAD',
-      signal: signal
-    });
-
-    controller.abort();
-
-    if (response.ok) {
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } else if (response.status === 404) {
-      showErrorModal();
-    }
-  } catch (e) {
-    try {
-      const item = btn.closest('.file-item');
-      const filename = item.dataset.filename + '.zip';
-      const gitBase = 'https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/文件/';
-      const downloadUrl = gitBase + encodeURIComponent(filename);
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    } catch (err) {
-      showErrorModal();
-    }
-  } finally {
-    btn.innerText = originalText;
-    btn.disabled = false;
+async function realDownload(btn){
+  let old=$(btn).text();
+  $(btn).text('处理中...').prop('disabled',true);
+  try{
+    let item=$(btn).closest('.file-item');
+    let name=item.data('filename')+'.zip';
+    let url='https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/文件/'+encodeURIComponent(name);
+    let a=$('<a>').attr({href:url,download:name}).appendTo('body');
+    a[0].click();a.remove();
+  }catch(e){
+    showErrorModal();
+  }finally{
+    $(btn).text(old).prop('disabled',false);
   }
 }
 </script>
 </body>
 </html>
+
