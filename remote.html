@@ -2,56 +2,49 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>远程终端控制台</title>
+<title>远程控制台</title>
 <style>
-body{background:#111;color:#eee;padding:20px;font-family:monospace;}
-.box{max-width:600px;margin:0 auto;}
-textarea{width:100%;height:120px;background:#222;color:#0f0;border:1px solid #444;padding:10px;margin:10px 0;}
-button{padding:8px 20px;background:#06c;border:none;color:#fff;cursor:pointer;margin-right:10px;}
-pre{background:#222;padding:10px;border:1px solid #444;white-space:pre-wrap;}
+body{background:#111;color:#0f0;padding:20px;font-family:monospace;}
+textarea{width:100%;height:100px;background:#222;border:1px solid #333;color:#0f0;}
+button{padding:6px 16px;background:#0066cc;color:#fff;border:0;margin:5px;}
+pre{background:#222;padding:10px;border:1px solid #333;white-space:pre-wrap;}
 </style>
 </head>
 <body>
-<div class="box">
-<h2>远程命令下发控制台</h2>
-<textarea id="cmdInput" placeholder="输入命令：echo 你好"></textarea>
+<h2>GitHub 远程命令控制台</h2>
+<textarea id="txt" placeholder="输入：echo 你好"></textarea>
 <br>
-<button onclick="sendCmd()">发送命令</button>
+<button onclick="setCmd()">发送命令</button>
 <button onclick="clearCmd()">清空命令</button>
 <pre id="log"></pre>
-</div>
 
 <script>
-// 固定你的仓库 raw 地址
-const rawTxt = "https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/cmd.txt";
+// 你的cmd.txt
+let raw = "https://raw.githubusercontent.com/qldwj/qldwj.github.io/main/cmd.txt";
 
-// 用跨域代理解决 GitHub 跨域
-async function getText(){
-  let res = await fetch("https://api.allorigins.win/raw?url="+encodeURIComponent(rawTxt));
-  return await res.text();
+// 用中转跨域 + 防缓存
+function getUrl(){
+    let t = new Date().getTime();
+    return "https://api.allorigins.win/raw?url="+encodeURIComponent(raw+"?_="+t);
 }
 
-async function writeText(content){
-  // 注意：必须自己在仓库右上角 Settings -> Developer settings -> Personal access tokens 建一个 token
-  // 这里先给你页面可用下发，后面我教你弄 token 直接写入
-  alert("现在只读模式，可以手动改仓库里的 cmd.txt 内容下发命令");
+// 手动复制内容，你粘贴到github cmd.txt 就行
+function setCmd(){
+    let v = document.getElementById("txt").value.trim();
+    if(!v)return;
+    document.getElementById("log").innerText = "已生成命令：\n"+v+"\n\n请复制，去GitHub编辑cmd.txt粘贴保存";
 }
-
-async function sendCmd(){
-  let cmd = document.getElementById("cmdInput").value.trim();
-  if(!cmd) return alert("请输入命令");
-  document.getElementById("log").innerText = "已设置命令：" + cmd;
-  // 现阶段：你复制命令，手动去仓库编辑 cmd.txt 粘贴保存即可
-}
-async function clearCmd(){
-  document.getElementById("log").innerText = "请手动清空仓库里 cmd.txt 的内容并保存";
+function clearCmd(){
+    document.getElementById("log").innerText = "请去GitHub把cmd.txt内容清空保存";
 }
 
 // 自动读取当前命令
 setInterval(async ()=>{
-  let txt = await getText();
-  document.getElementById("log").innerText = "当前待执行命令：\n" + txt;
+    let res = await fetch(getUrl());
+    let text = await res.text();
+    document.getElementById("log").innerText = "当前生效命令：\n"+text;
 },2000);
 </script>
 </body>
 </html>
+
