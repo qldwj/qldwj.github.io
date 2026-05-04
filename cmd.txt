@@ -1,1 +1,1 @@
-echo 123
+rm -f "/storage/emulated/0/--1/1   html/樱花动漫/111.sh.bak"
